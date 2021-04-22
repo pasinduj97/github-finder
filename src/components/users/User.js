@@ -1,13 +1,15 @@
-import React, { Component, Fragment, useEffect } from 'react';
-import Spinner from '../layouts/Spinner';
-import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
-import Repos from '../repos/Repos';
+import React, { Fragment, useEffect, useContext } from "react";
+import Spinner from "../layouts/Spinner";
+import { Link } from "react-router-dom";
+import Repos from "../repos/Repos";
+import GitHubContext from "../../context/github/githubContext";
 
-const User = ({ user, getUser, getUserRepos, match, loading, repos }) => {
+const User = ({ match }) => {
+  const githubContext = useContext(GitHubContext);
+
   useEffect(() => {
-    getUser(match.params.login);
-    getUserRepos(match.params.login);
+    githubContext.getUser(match.params.login);
+    githubContext.getUserRepos(match.params.login);
     //eslint-disable-next-line
   }, []);
 
@@ -24,42 +26,42 @@ const User = ({ user, getUser, getUserRepos, match, loading, repos }) => {
     following,
     public_repos,
     public_gists,
-    hireable
-  } = user;
+    hireable,
+  } = githubContext.user;
 
-  if (loading) return <Spinner />;
+  if (githubContext.loading) return <Spinner />;
 
   return (
     <Fragment>
-      <Link to='/' className='btn btn-light'>
+      <Link to="/" className="btn btn-light">
         Back To Search
       </Link>
       {hireable ? (
-        <i className='fas fa-check text-success' />
+        <i className="fas fa-check text-success" />
       ) : (
-        <i className='fas fas-check text-danger' />
+        <i className="fas fas-check text-danger" />
       )}
 
-      <div className='card grid-2'>
-        <div className='all-center'>
+      <div className="card grid-2">
+        <div className="all-center">
           <img
             src={avatar_url}
-            className='round-img'
-            style={{ width: '150px' }}
-            alt=''
+            className="round-img"
+            style={{ width: "150px" }}
+            alt=""
           />
           <h1>{name}</h1>
           <p>location: {location}</p>
         </div>
         <div>
-          {' '}
+          {" "}
           {bio && (
             <Fragment>
               <h3>Bio</h3>
               <p>{bio}</p>
             </Fragment>
           )}
-          <a href={html_url} className='btn btn-dark my-1'>
+          <a href={html_url} className="btn btn-dark my-1">
             Visit GitHub Profile
           </a>
           <ul>
@@ -92,22 +94,15 @@ const User = ({ user, getUser, getUserRepos, match, loading, repos }) => {
           </ul>
         </div>
       </div>
-      <div className='card text-center'>
-        <div className='badge badge-primary'>Followers: {followers}</div>
-        <div className='badge badge-success'>Following: {following}</div>
-        <div className='badge badge-light'>Public Repos: {public_repos}</div>
-        <div className='badge badge-dark'>Public Gists: {public_gists}</div>
+      <div className="card text-center">
+        <div className="badge badge-primary">Followers: {followers}</div>
+        <div className="badge badge-success">Following: {following}</div>
+        <div className="badge badge-light">Public Repos: {public_repos}</div>
+        <div className="badge badge-dark">Public Gists: {public_gists}</div>
       </div>
-      <Repos repos={repos} />
+      <Repos />
     </Fragment>
   );
-};
-
-User.propTypes = {
-  loading: PropTypes.bool,
-  user: PropTypes.object.isRequired,
-  getUser: PropTypes.func.isRequired,
-  getUserRepos: PropTypes.func.isRequired
 };
 
 export default User;
